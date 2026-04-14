@@ -5,78 +5,150 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex, nofollow">
   <title>Калькулятор дельти ОЗС</title>
-
   <style>
     :root {
       --blue: #123b7a;
+      --blue-dark: #0d2c5c;
       --red: #d71920;
       --border: #d9e2ec;
       --text: #1f2937;
       --muted: #6b7280;
+      --bg: #eef3f8;
+      --white: #ffffff;
       --radius: 16px;
+      --success-bg: #eef8f1;
+      --success-text: #166534;
+      --warning-bg: #fff7e8;
+      --warning-text: #9a6700;
+      --danger-bg: #fdeeee;
+      --danger-text: #b42318;
+      --neutral-bg: #f5f7fa;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
     html, body {
       margin: 0;
+      width: 100%;
       height: 100%;
       overflow: hidden;
       font-family: Arial, sans-serif;
-      background: #eef3f8;
+      background: var(--bg);
       color: var(--text);
     }
 
-    .app {
+    body {
+      min-height: 100dvh;
+    }
+
+    .screen {
       height: 100dvh;
-      padding: 10px;
+      min-height: 100dvh;
+      padding: clamp(8px, 2.5vw, 14px);
+      display: grid;
+      place-items: stretch;
+    }
+
+    .app {
+      width: min(100%, 520px);
+      height: 100%;
+      margin: 0 auto;
       display: grid;
       grid-template-rows: auto 1fr;
-      max-width: 500px;
-      margin: auto;
-      gap: 10px;
+      gap: clamp(8px, 2vw, 12px);
     }
 
     .header {
-      background: var(--blue);
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
       color: white;
       border-radius: var(--radius);
-      padding: 12px;
+      padding: clamp(10px, 2.6vw, 14px);
       text-align: center;
     }
 
     .header h1 {
       margin: 0;
-      font-size: 22px;
+      font-size: clamp(20px, 5.2vw, 28px);
+      line-height: 1.1;
+      font-weight: 700;
+    }
+
+    .header p {
+      margin: 6px 0 0;
+      font-size: clamp(12px, 3.2vw, 15px);
+      line-height: 1.25;
+      color: rgba(255,255,255,0.92);
     }
 
     .card {
-      background: white;
+      background: var(--white);
       border-radius: var(--radius);
-      padding: 10px;
+      padding: clamp(10px, 2.5vw, 14px);
       display: grid;
-      gap: 10px;
+      grid-template-rows: auto auto auto 1fr;
+      gap: clamp(8px, 2vw, 12px);
+      min-height: 0;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
     }
 
     .label {
-      font-weight: bold;
-      font-size: 14px;
+      font-weight: 700;
+      font-size: clamp(13px, 3.2vw, 15px);
+      color: var(--text);
+    }
+
+    .input-wrap {
+      position: relative;
     }
 
     input {
       width: 100%;
-      height: 60px;
-      font-size: 24px;
-      font-weight: bold;
+      height: clamp(52px, 8.5vh, 64px);
+      font-size: clamp(21px, 5.8vw, 28px);
+      font-weight: 700;
       border-radius: 12px;
       border: 1px solid var(--border);
-      padding: 0 10px;
+      padding: 0 48px 0 12px;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(18, 59, 122, 0.10);
+    }
+
+    .unit {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: clamp(13px, 3vw, 15px);
+      font-weight: 700;
+      color: var(--muted);
     }
 
     button {
-      height: 60px;
-      font-size: 18px;
-      font-weight: bold;
+      width: 100%;
+      height: clamp(52px, 8.5vh, 62px);
+      font-size: clamp(17px, 4.4vw, 20px);
+      font-weight: 700;
       border-radius: 12px;
       border: none;
       background: var(--red);
@@ -85,104 +157,162 @@
     }
 
     .result {
+      min-height: 0;
       border-radius: var(--radius);
-      padding: 10px;
+      padding: clamp(10px, 2.6vw, 14px);
       text-align: center;
-      background: #f5f7fa;
+      background: var(--neutral-bg);
+      display: grid;
+      align-content: center;
+      gap: clamp(4px, 1vw, 8px);
+    }
+
+    .result-label {
+      font-size: clamp(11px, 2.8vw, 13px);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      opacity: 0.9;
     }
 
     .percent {
-      font-size: 40px;
-      font-weight: bold;
+      font-size: clamp(34px, 9vw, 48px);
+      font-weight: 700;
+      line-height: 1;
     }
 
     .delta {
-      font-size: 22px;
-      font-weight: bold;
+      font-size: clamp(19px, 5vw, 26px);
+      font-weight: 700;
+      line-height: 1.1;
     }
 
     .note {
-      margin-top: 5px;
-      font-size: 14px;
-      font-weight: bold;
+      font-size: clamp(13px, 3.3vw, 15px);
+      font-weight: 700;
+      line-height: 1.25;
     }
 
-    .success { background: #eef8f1; color: #166534; }
-    .warning { background: #fff7e8; color: #9a6700; }
-    .danger { background: #fdeeee; color: #b42318; }
+    .success {
+      background: var(--success-bg);
+      color: var(--success-text);
+    }
+
+    .warning {
+      background: var(--warning-bg);
+      color: var(--warning-text);
+    }
+
+    .danger {
+      background: var(--danger-bg);
+      color: var(--danger-text);
+    }
+
+    @media (max-height: 700px) {
+      .header p {
+        display: none;
+      }
+    }
+
+    @media (max-height: 620px) {
+      .screen {
+        padding: 8px;
+      }
+
+      .card, .header {
+        padding: 10px;
+      }
+
+      .app {
+        gap: 8px;
+      }
+
+      .card {
+        gap: 8px;
+      }
+    }
   </style>
 </head>
-
 <body>
+  <div class="screen">
+    <div class="app">
+      <div class="header">
+        <h1>Калькулятор дельти ОЗС</h1>
+        <p>Введіть значення до та після лікування</p>
+      </div>
 
-<div class="app">
+      <div class="card">
+        <div class="field">
+          <div class="label">ОЗС до</div>
+          <div class="input-wrap">
+            <input id="before" type="number" inputmode="decimal" placeholder="120" autofocus>
+            <span class="unit">мл</span>
+          </div>
+        </div>
 
-  <div class="header">
-    <h1>Калькулятор дельти ОЗС</h1>
+        <div class="field">
+          <div class="label">ОЗС після</div>
+          <div class="input-wrap">
+            <input id="after" type="number" inputmode="decimal" placeholder="40">
+            <span class="unit">мл</span>
+          </div>
+        </div>
+
+        <button onclick="calculate()">Розрахувати</button>
+
+        <div id="result" class="result">
+          <div class="result-label">Результат</div>
+          <div id="percent" class="percent">— %</div>
+          <div id="delta" class="delta">Δ: — мл</div>
+          <div id="note" class="note">Введіть значення для розрахунку</div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
+  <script>
+    function calculate() {
+      const beforeRaw = document.getElementById('before').value.trim().replace(',', '.');
+      const afterRaw = document.getElementById('after').value.trim().replace(',', '.');
 
-    <div>
-      <div class="label">ОЗС до лікування препаратом Урорек</div>
-      <input id="before" type="number" placeholder="120">
-    </div>
+      const before = parseFloat(beforeRaw);
+      const after = parseFloat(afterRaw);
 
-    <div>
-      <div class="label">ОЗС після лікування препаратом Урорек</div>
-      <input id="after" type="number" placeholder="40">
-    </div>
+      if (!before || before <= 0 || isNaN(before) || isNaN(after)) return;
 
-    <button onclick="calculate()">Розрахувати</button>
+      const deltaMl = before - after;
+      const deltaPercent = (deltaMl / before) * 100;
 
-    <div id="result" class="result">
-      <div id="percent" class="percent">— %</div>
-      <div id="delta" class="delta">Δ: — мл</div>
-      <div id="note" class="note"></div>
-    </div>
+      const percentEl = document.getElementById('percent');
+      const deltaEl = document.getElementById('delta');
+      const noteEl = document.getElementById('note');
+      const resultEl = document.getElementById('result');
 
-  </div>
-</div>
+      const arrow = deltaMl < 0 ? '↑ ' : '↓ ';
 
-<script>
-function calculate() {
-  const before = parseFloat(document.getElementById('before').value);
-  const after = parseFloat(document.getElementById('after').value);
+      percentEl.textContent = arrow + Math.abs(deltaPercent).toFixed(1) + '%';
+      deltaEl.textContent = 'Δ: ' + deltaMl.toFixed(1) + ' мл';
 
-  if (!before || before <= 0) return;
+      let note = '';
+      let className = 'result';
 
-  const deltaMl = before - after;
-  const deltaPercent = (deltaMl / before) * 100;
+      if (deltaMl < 0) {
+        note = 'ОЗС збільшився';
+        className += ' danger';
+      } else if (deltaPercent >= 50) {
+        note = 'Виражене зниження ОЗС';
+        className += ' success';
+      } else if (deltaPercent >= 30) {
+        note = 'Помірне зниження ОЗС';
+        className += ' warning';
+      } else {
+        note = 'Незначне зниження ОЗС';
+        className += ' danger';
+      }
 
-  const percentEl = document.getElementById('percent');
-  const deltaEl = document.getElementById('delta');
-  const noteEl = document.getElementById('note');
-  const resultEl = document.getElementById('result');
-
-  percentEl.textContent = deltaPercent.toFixed(1) + '%';
-  deltaEl.textContent = 'Δ: ' + deltaMl.toFixed(1) + ' мл';
-
-  let note = '';
-  let className = 'result';
-
-  if (deltaMl < 0) {
-    note = 'ОЗС збільшився';
-    className += ' danger';
-  } else if (deltaPercent >= 50) {
-    note = 'Виражене зниження ОЗС';
-    className += ' success';
-  } else if (deltaPercent >= 30) {
-    note = 'Помірне зниження ОЗС';
-    className += ' warning';
-  } else {
-    note = 'Незначне зниження ОЗС';
-    className += ' danger';
-  }
-
-  noteEl.textContent = note;
-  resultEl.className = className;
-}
-</script>
-
+      noteEl.textContent = note;
+      resultEl.className = className;
+    }
+  </script>
 </body>
 </html>
