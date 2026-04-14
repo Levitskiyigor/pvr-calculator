@@ -207,30 +207,6 @@
       background: var(--danger-bg);
       color: var(--danger-text);
     }
-
-    @media (max-height: 700px) {
-      .header p {
-        display: none;
-      }
-    }
-
-    @media (max-height: 620px) {
-      .screen {
-        padding: 8px;
-      }
-
-      .card, .header {
-        padding: 10px;
-      }
-
-      .app {
-        gap: 8px;
-      }
-
-      .card {
-        gap: 8px;
-      }
-    }
   </style>
 </head>
 <body>
@@ -245,7 +221,7 @@
         <div class="field">
           <div class="label">ОЗС до</div>
           <div class="input-wrap">
-            <input id="before" type="number" inputmode="decimal" placeholder="120" autofocus>
+            <input id="before" type="number" inputmode="decimal" placeholder="120">
             <span class="unit">мл</span>
           </div>
         </div>
@@ -271,14 +247,23 @@
   </div>
 
   <script>
+    const LOG_ENDPOINT = 'https://script.google.com/macros/s/AKfycbw7oWIVBAtQv7RA40HbcXBI5mcqlz31uAyHeAklUeUrykBFXzS-x-aJijikwcLEmuc3VQ/exec';
+
+    function logCalculation(before, after) {
+      fetch(LOG_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify({ before: before, after: after })
+      }).catch(() => {});
+    }
+
     function calculate() {
-      const beforeRaw = document.getElementById('before').value.trim().replace(',', '.');
-      const afterRaw = document.getElementById('after').value.trim().replace(',', '.');
+      const before = parseFloat(document.getElementById('before').value);
+      const after = parseFloat(document.getElementById('after').value);
 
-      const before = parseFloat(beforeRaw);
-      const after = parseFloat(afterRaw);
-
-      if (!before || before <= 0 || isNaN(before) || isNaN(after)) return;
+      if (!before || before <= 0 || isNaN(after)) return;
 
       const deltaMl = before - after;
       const deltaPercent = (deltaMl / before) * 100;
@@ -312,6 +297,8 @@
 
       noteEl.textContent = note;
       resultEl.className = className;
+
+      setTimeout(() => logCalculation(before, after), 0);
     }
   </script>
 </body>
